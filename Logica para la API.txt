@@ -1,0 +1,3 @@
+Para reconocer cada ID de las proteínas, puedo descargar un archivo JSON de unos alimentos y buscar qué ID corresponde a cada una de las proteínas y pasárselo directamente, con el nombre y el campo que dice la cantidad de esa proteína. Hay proteínas que no están en todos los alimentos, así que hay que hacerlos nullables para que cuando no devuelva algo ese ID que se ponga en null y no afecte y que cuando exista pues lo añada. El campo que contiene la cantidad de ese nutriente en esa comida se llama best_location que se obtiene al usar el $food = $client->getFood(893);
+
+Ahí puedes ver el ID de cada nutriente también, que la idea es ver el ID que tiene cada uno de los que pide la aplicación y anotarlos ya que siempre son los mismos para cada grupo.
