@@ -38,6 +38,6 @@ class Product extends Model
     // Relación: Pertenece a muchos Platos
     public function dishes()
     {
-        return $this->belongsToMany(Dish::class)->withPivot('amount');
+        return $this->belongsToMany(Dish::class)->withPivot('amount')->withTimestamps();
     }
 }
