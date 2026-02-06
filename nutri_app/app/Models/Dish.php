@@ -34,7 +34,7 @@ class Dish extends Model
             $total += ($grams / 100) * $value;
         }
 
-        return number_format($total, 1); // Devolvemos el total con 1 decimal
+        return round($total, 1); // Devolvemos el total con 1 decimal
     }
 
     // Atajos para que la Vista pueda pedir los datos fácilmente

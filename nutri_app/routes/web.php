@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\AdminStatController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/productos/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::delete('/platos/{dish}', [DishController::class, 'destroy'])->name('dishes.destroy');
     Route::delete('/calendario/{menu}', [MenuController::class, 'destroy'])->name('menus.destroy');
+    Route::get('/admin/estadisticas', [AdminStatController::class, 'index'])->middleware(['auth', 'can:ver estadisticas'])->name('admin.stats');
 });
 
 require __DIR__.'/auth.php';

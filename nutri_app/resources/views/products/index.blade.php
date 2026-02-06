@@ -13,16 +13,23 @@
                         <h3 class="text-lg font-semibold text-gray-800">Mis Ingredientes y Base de Datos</h3>    
 
                         <div class="flex gap-3">
-                        <a href="{{ route('menus.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded flex items-center">
-                        Ver Calendario
-                        </a>                        
-                        <a href="{{ route('dishes.create') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center">
-                        + Crear Plato
-                        </a>
-                        
-                        <a href="{{ route('products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
-                        + Nuevo Producto
-                        </a>
+                            {{-- BOTÓN ESTADÍSTICAS (Solo visible para Admin) --}}
+                            @can('ver estadisticas')
+                                <a href="{{ route('admin.stats') }}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                                    📊 Estadísticas
+                                </a>
+                            @endcan
+
+                            <a href="{{ route('menus.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                            Ver Calendario
+                            </a>                        
+                            <a href="{{ route('dishes.create') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                            + Crear Plato
+                            </a>
+                            
+                            <a href="{{ route('products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                            + Nuevo Producto
+                            </a>
                         </div>
                     </div>   
                     {{-- Tabla de Productos --}}
@@ -39,7 +46,7 @@
                                     <th class="p-3 border-b-2 text-xs text-gray-500">Sat.</th>
                                     <th class="p-3 border-b-2 text-xs text-gray-500">Mono.</th>
                                     <th class="p-3 border-b-2 text-xs text-gray-500">Poli.</th>
-                                    <th class="p-3 border-b-2 text-red-500">Trans</th> {{-- Destacamos Trans --}}
+                                    <th class="p-3 border-b-2 text-red-500">Trans</th>
                                     <th class="p-3 border-b-2">Colesterol</th>
 
                                     {{-- Otros Macros --}}
@@ -72,19 +79,27 @@
                                         <td class="p-3">{{ $product->fiber }} g</td>
                                         <td class="p-3 font-semibold text-blue-600">{{ $product->protein }} g</td>
                                         <td class="p-3">{{ $product->sodium }} mg</td>
+                                        
                                         {{-- Acciones --}}
                                         <td class="p-3">
-                                            @if($product->user_id === Auth::id())
+                                            {{-- LÓGICA CORREGIDA: Primero miramos el permiso --}}
+                                            @can('borrar productos')
+                                                {{-- El ADMIN entra aquí siempre --}}
                                                 <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres borrar este ingrediente?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-500 hover:text-red-700 font-bold">
+                                                    <button type="submit" class="text-red-500 hover:text-red-700 font-bold flex items-center gap-1">
                                                         🗑️ Borrar
                                                     </button>
                                                 </form>
                                             @else
-                                                <span class="text-gray-400 text-xs italic">Global</span>
-                                            @endif
+                                                {{-- El USUARIO NORMAL entra aquí siempre --}}
+                                                @if($product->user_id === Auth::id())
+                                                    <span class="text-blue-500 text-xs italic font-semibold">Tuyo</span>
+                                                @else
+                                                    <span class="text-gray-400 text-xs italic">Base de Datos</span>
+                                                @endif
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach

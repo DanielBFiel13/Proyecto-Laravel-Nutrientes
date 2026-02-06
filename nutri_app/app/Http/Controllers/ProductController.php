@@ -11,10 +11,17 @@ class ProductController extends Controller
 {
     public function index()
     {
-
-        $products = Product::whereNull('user_id')
-            ->orWhere('user_id', auth()->id())
-            ->get();
+        // CAMBIO: Lógica para roles
+        // Si el usuario tiene el rol 'admin', recuperamos TODOS los productos
+        if (auth()->user()->hasRole('admin')) {
+            $products = Product::all();
+        } else {
+            // Si es usuario normal, mantenemos la lógica antigua:
+            // Ver productos globales (user_id null) O los suyos propios
+            $products = Product::whereNull('user_id')
+                ->orWhere('user_id', auth()->id())
+                ->get();
+        }
 
         return view('products.index', compact('products'));
     }
@@ -31,7 +38,7 @@ class ProductController extends Controller
     // Función para guardar el producto en la BD
     public function store(Request $request)
     {
-        // Validamos que los datos sean correctos (que no vengan vacíos y sean números)
+        // Validamos que los datos sean correctos
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -63,12 +70,16 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // Solo borrar si el producto es del usuario
-        if ($product->user_id !== Auth::id()) {
-            abort(403, 'No puedes borrar ingredientes de la base de datos global.');
+        // CAMBIO: Seguridad basada en Permisos de Spatie
+        // Verificamos si el usuario tiene el permiso explícito de 'borrar productos'.
+        // El Admin SÍ lo tiene. El Usuario Normal NO lo tiene.
+        if (!auth()->user()->can('borrar productos')) {
+            abort(403, 'No tienes permiso para eliminar productos.');
         }
 
+        // Si pasa el control anterior (es admin), eliminamos el producto.
         $product->delete();
+        
         return redirect()->route('products.index')->with('success', 'Producto eliminado.');
     }
 }
